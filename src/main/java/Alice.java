@@ -8,11 +8,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 
 public class Alice {
-    static PublicKeyEncOuterClass.PublicKeyEnc alicePubKey;
+
+    static PublicKeyEncOuterClass.PublicKeyEnc alicePubKeyProtobufSerialized;
+    byte[] alicePubKeyEncByteArray;
+    ByteString alicePubKeyByteString;
 
     public Alice() throws NoSuchAlgorithmException {
-
-
     }
 
     public PublicKeyEncOuterClass.PublicKeyEnc generateAlicePublicKey() throws NoSuchAlgorithmException, InvalidKeyException {
@@ -30,15 +31,19 @@ public class Alice {
         aliceKeyAgree.init(aliceKpair.getPrivate());
 
         // Alice encodes her public key, and sends it over to Bob.
-        byte[] alicePubKeyEnc = aliceKpair.getPublic().getEncoded();
+        alicePubKeyEncByteArray = aliceKpair.getPublic().getEncoded();
 
-        ByteString aliceKey = ByteString.copyFrom(alicePubKeyEnc);
+        alicePubKeyByteString = ByteString.copyFrom(alicePubKeyEncByteArray);
 
         //TODO: send alicePubKeyEnc to Bob
 
-        alicePubKey = PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
-                .addAllEncodedPublicKey(Collections.singleton(aliceKey)).build();
-        System.out.println(alicePubKey.toString());
-        return alicePubKey;
+        alicePubKeyProtobufSerialized = PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
+                .addAllEncodedPublicKey(Collections.singleton(alicePubKeyByteString)).build();
+
+        byte[] bytestringToByte = new byte[alicePubKeyEncByteArray.length];
+        alicePubKeyProtobufSerialized.toByteString().copyTo(bytestringToByte, 0);
+        System.out.println(alicePubKeyEncByteArray == bytestringToByte);
+
+        return alicePubKeyProtobufSerialized;
     }
 }

@@ -6,6 +6,7 @@ import javax.crypto.spec.DHParameterSpec;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Bob {
@@ -19,6 +20,9 @@ public class Bob {
         //TODO: receive alicePubKeyEnc from Alice ---- deserialize protobuffed message
 
         byte[] alicePubKeyEnc = alicePublicKey.toByteString().toByteArray();
+        System.out.println(alicePublicKey);
+        System.out.println(Arrays.toString(alicePublicKey.toByteString().toByteArray()));
+        System.out.println(Arrays.toString(alicePublicKey.toByteArray()));
 
         /*
          * Let's turn over to Bob. Bob has received Alice's public key

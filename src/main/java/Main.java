@@ -21,8 +21,10 @@ public class Main {
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, InvalidAlgorithmParameterException, InvalidKeySpecException {
         Alice alice = new Alice();
         Bob bob = new Bob();
+
         PublicKeyEncOuterClass.PublicKeyEnc alicePubKey = alice.generateAlicePublicKey();
         PublicKeyEncOuterClass.PublicKeyEnc bobPubKey = bob.generateBobPublicKey(alicePubKey);
+
         System.out.println(bobPubKey);
 
 
