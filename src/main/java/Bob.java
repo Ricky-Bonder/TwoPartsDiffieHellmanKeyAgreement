@@ -19,10 +19,7 @@ public class Bob {
     public PublicKeyEncOuterClass.PublicKeyEnc generateBobPublicKey(PublicKeyEncOuterClass.PublicKeyEnc alicePublicKey) throws InvalidKeySpecException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
         //TODO: receive alicePubKeyEnc from Alice ---- deserialize protobuffed message
 
-        byte[] alicePubKeyEnc = alicePublicKey.toByteString().toByteArray();
-        System.out.println(alicePublicKey);
-        System.out.println(Arrays.toString(alicePublicKey.toByteString().toByteArray()));
-        System.out.println(Arrays.toString(alicePublicKey.toByteArray()));
+        byte[] alicePubKeyEnc = Alice.alicePubKeyProtobufSerialized.getEncodedPublicKeyList().get(0).toByteArray();
 
         /*
          * Let's turn over to Bob. Bob has received Alice's public key

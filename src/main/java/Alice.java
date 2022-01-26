@@ -40,9 +40,7 @@ public class Alice {
         alicePubKeyProtobufSerialized = PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
                 .addAllEncodedPublicKey(Collections.singleton(alicePubKeyByteString)).build();
 
-        byte[] bytestringToByte = new byte[alicePubKeyEncByteArray.length];
-        alicePubKeyProtobufSerialized.toByteString().copyTo(bytestringToByte, 0);
-        System.out.println(alicePubKeyEncByteArray == bytestringToByte);
+
 
         return alicePubKeyProtobufSerialized;
     }
