@@ -19,6 +19,8 @@ public class Alice {
     protected byte[] aliceSharedSecret;
     private SecretKeySpec aliceAesKey;
 
+    byte[] recovered;
+
     public Alice() throws NoSuchAlgorithmException {
     }
 
@@ -116,8 +118,10 @@ public class Alice {
 
     }
 
-    public void aliceDecrypts() throws Exception {
-        //todo: needs param as serialized encodedParams
+    public void aliceDecrypts(PublicKeyEncOuterClass.PublicKeyEnc encodedParams) throws Exception {
+
+        byte[] encodedParamsDeserialized = encodedParams.getEncodedPublicKeyList().get(0).toByteArray();
+
         /*
          * Alice decrypts, using AES in CBC mode
          */
@@ -125,10 +129,11 @@ public class Alice {
         // Instantiate AlgorithmParameters object from parameter encoding
         // obtained from Bob
         AlgorithmParameters aesParams = AlgorithmParameters.getInstance("AES");
-//        aesParams.init(encodedParams);
+        aesParams.init(encodedParamsDeserialized);
         Cipher aliceCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         aliceCipher.init(Cipher.DECRYPT_MODE, aliceAesKey, aesParams);
-//        byte[] recovered = aliceCipher.doFinal(ciphertext);
+        byte[] cleartext = "This is just an example message from Alice to Bob".getBytes();
+        recovered = aliceCipher.doFinal(cleartext);
 
     }
 

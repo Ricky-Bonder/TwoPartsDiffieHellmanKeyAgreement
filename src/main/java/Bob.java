@@ -21,6 +21,8 @@ public class Bob {
     protected byte[] bobSharedSecret;
     private SecretKeySpec bobAesKey;
 
+    protected byte[] cleartext;
+
     public Bob() {
 
     }
@@ -103,13 +105,13 @@ public class Bob {
 
     }
 
-    public void bobEncrypts() throws InvalidKeyException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException {
+    public PublicKeyEncOuterClass.PublicKeyEnc bobEncrypts() throws InvalidKeyException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException {
         /*
          * Bob encrypts, using AES in CBC mode
          */
         Cipher bobCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         bobCipher.init(Cipher.ENCRYPT_MODE, bobAesKey);
-        byte[] cleartext = "This is just an example".getBytes();
+        cleartext = "This is just an example message from Bob to Alice".getBytes();
         byte[] ciphertext = bobCipher.doFinal(cleartext);
 
         // Retrieve the parameter that was used, and transfer it to Alice in
@@ -117,6 +119,12 @@ public class Bob {
         byte[] encodedParams = bobCipher.getParameters().getEncoded();
 
         //todo: serialize encodedParams and send to alice
+
+        ByteString encodedParamsByteString = ByteString.copyFrom(encodedParams);
+
+        PublicKeyEncOuterClass.PublicKeyEnc encodedParamsProtobufSerialized = PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
+                .addAllEncodedPublicKey(Collections.singleton(encodedParamsByteString)).build();
+        return encodedParamsProtobufSerialized;
     }
 
     /*

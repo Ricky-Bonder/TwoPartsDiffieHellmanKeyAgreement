@@ -1,14 +1,9 @@
-import com.google.protobuf.ByteString;
-import com.google.protobuf.CodedOutputStream;
-import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.Test;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,11 +34,24 @@ public class AliceTest {
     }
 
     @Test
-    public void decipherTextWorks() throws Exception {
-//        byte[] recovered = aliceCipher.doFinal(ciphertext);
-//        if (!java.util.Arrays.equals(cleartext, recovered))
-//            throw new Exception("AES in CBC mode recovered text is " +
-//                    "different from cleartext");
-//        System.out.println("AES in CBC mode recovered text is same as cleartext");
+    public void decipherTextWorks() throws Exception { Alice alice = new Alice();
+        Bob bob = new Bob();
+
+        PublicKeyEncOuterClass.PublicKeyEnc alicePubKey = alice.generateAlicePublicKey();
+        PublicKeyEncOuterClass.PublicKeyEnc bobPubKey = bob.generateBobPublicKey(alicePubKey);
+
+        alice.alicePhase2(bobPubKey);
+        bob.bobPhase2();
+
+        alice.generateSharedSecret();
+        bob.generateSharedSecret();
+
+        PublicKeyEncOuterClass.PublicKeyEnc encodedParamSerialized = bob.bobEncrypts();
+        alice.aliceDecrypts(encodedParamSerialized);
+
+        if (!java.util.Arrays.equals(bob.cleartext, alice.recovered))
+            throw new Exception("AES in CBC mode recovered text is " +
+                    "different from cleartext");
+        System.out.println("AES in CBC mode recovered text is same as cleartext");
     }
 }

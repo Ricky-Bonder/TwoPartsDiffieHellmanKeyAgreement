@@ -1,7 +1,10 @@
 import com.google.protobuf.ByteString;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyAgreement;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHParameterSpec;
 import java.io.File;
@@ -18,12 +21,21 @@ import java.util.regex.PatternSyntaxException;
 
 public class Main {
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException, InvalidAlgorithmParameterException, InvalidKeySpecException {
+    public static void main(String[] args) throws Exception {
         Alice alice = new Alice();
         Bob bob = new Bob();
 
         PublicKeyEncOuterClass.PublicKeyEnc alicePubKey = alice.generateAlicePublicKey();
         PublicKeyEncOuterClass.PublicKeyEnc bobPubKey = bob.generateBobPublicKey(alicePubKey);
+
+        alice.alicePhase2(bobPubKey);
+        bob.bobPhase2();
+
+        alice.generateSharedSecret();
+        bob.generateSharedSecret();
+
+        PublicKeyEncOuterClass.PublicKeyEnc encodedParams = bob.bobEncrypts();
+        alice.aliceDecrypts(encodedParams);
 
     }
 
