@@ -30,4 +30,20 @@ public class AliceTest {
         System.out.println(Arrays.toString(Alice.alicePubKeyProtobufSerialized.getEncodedPublicKeyList().get(0).toByteArray()));
         assertEquals(alice.alicePubKeyEncByteArray, Alice.alicePubKeyProtobufSerialized.getEncodedPublicKeyList().get(0).toByteArray());
     }
+
+    @Test
+    public void sharedSecretsAreEqual() throws Exception {
+        Alice alice = new Alice();
+        Bob bob = new Bob();
+        assertArrayEquals(alice.aliceSharedSecret, bob.bobSharedSecret);
+    }
+
+    @Test
+    public void decipherTextWorks() throws Exception {
+//        byte[] recovered = aliceCipher.doFinal(ciphertext);
+//        if (!java.util.Arrays.equals(cleartext, recovered))
+//            throw new Exception("AES in CBC mode recovered text is " +
+//                    "different from cleartext");
+//        System.out.println("AES in CBC mode recovered text is same as cleartext");
+    }
 }

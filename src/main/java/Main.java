@@ -25,7 +25,6 @@ public class Main {
         PublicKeyEncOuterClass.PublicKeyEnc alicePubKey = alice.generateAlicePublicKey();
         PublicKeyEncOuterClass.PublicKeyEnc bobPubKey = bob.generateBobPublicKey(alicePubKey);
 
-        System.out.println(bobPubKey);
     }
 
 
