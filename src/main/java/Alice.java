@@ -2,7 +2,6 @@ import com.google.protobuf.ByteString;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
@@ -17,7 +16,11 @@ public class Alice {
 
     private KeyAgreement aliceKeyAgree;
     protected byte[] aliceSharedSecret;
+
+    static SharedLength.sharedSecretLength aliceSharedSecretLengthSerialized;
+
     private SecretKeySpec aliceAesKey;
+    private Cipher aliceCipher;
 
     byte[] recovered;
 
@@ -76,7 +79,7 @@ public class Alice {
 
     }
 
-    public void generateSharedSecret() throws Exception {
+    public SharedLength.sharedSecretLength generateSharedSecret() throws Exception {
         /*
          * At this stage, both Alice and Bob have completed the DH key
          * agreement protocol.
@@ -88,7 +91,12 @@ public class Alice {
         System.out.println("Alice secret: " +
                 toHexString(aliceSharedSecret));
 
+        aliceSharedSecretLengthSerialized = SharedLength.sharedSecretLength.newBuilder().setSharedSecretLen(aliceLen).build();
+        return aliceSharedSecretLengthSerialized;
 
+    }
+
+    public void finalPhase() {
         /*
          * Now let's create a SecretKey object using the shared secret
          * and use it for encryption. First, we generate SecretKeys for the
@@ -112,13 +120,9 @@ public class Alice {
         System.out.println("Use shared secret as SecretKey object ...");
 
         aliceAesKey = new SecretKeySpec(aliceSharedSecret, 0, 16, "AES");
-
-
-
-
     }
 
-    public void aliceDecrypts(PublicKeyEncOuterClass.PublicKeyEnc encodedParams) throws Exception {
+    public void instantiateAlgoParams(PublicKeyEncOuterClass.PublicKeyEnc encodedParams) throws Exception {
 
         byte[] encodedParamsDeserialized = encodedParams.getEncodedPublicKeyList().get(0).toByteArray();
 
@@ -130,11 +134,20 @@ public class Alice {
         // obtained from Bob
         AlgorithmParameters aesParams = AlgorithmParameters.getInstance("AES");
         aesParams.init(encodedParamsDeserialized);
-        Cipher aliceCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        aliceCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         aliceCipher.init(Cipher.DECRYPT_MODE, aliceAesKey, aesParams);
-        byte[] cleartext = "This is just an example message from Alice to Bob".getBytes();
-        recovered = aliceCipher.doFinal(cleartext);
 
+
+    }
+
+    public byte[] decodeCiphertext(PublicKeyEncOuterClass.PublicKeyEnc ciphertextSerialized) throws IllegalBlockSizeException, BadPaddingException {
+        byte[] ciphertextDeserialized = ciphertextSerialized.getEncodedPublicKeyList().get(0).toByteArray();
+
+        recovered = aliceCipher.doFinal(ciphertextDeserialized);
+
+        System.out.println("Decrypted Ciphertext received: "+new String(recovered));
+
+        return recovered;
     }
 
     /*

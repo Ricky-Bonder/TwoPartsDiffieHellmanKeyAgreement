@@ -43,11 +43,16 @@ public class AliceTest {
         alice.alicePhase2(bobPubKey);
         bob.bobPhase2();
 
-        alice.generateSharedSecret();
-        bob.generateSharedSecret();
+        SharedLength.sharedSecretLength aliceLenSerialized = alice.generateSharedSecret();
+        bob.generateSharedSecret(aliceLenSerialized);
 
-        PublicKeyEncOuterClass.PublicKeyEnc encodedParamSerialized = bob.bobEncrypts();
-        alice.aliceDecrypts(encodedParamSerialized);
+        alice.finalPhase();
+
+        PublicKeyEncOuterClass.PublicKeyEnc encodedParams = bob.bobSendsEncodedParams();
+        alice.instantiateAlgoParams(encodedParams);
+        PublicKeyEncOuterClass.PublicKeyEnc ciphertextSerialized = bob.sendCiphertext();
+        alice.decodeCiphertext(ciphertextSerialized);
+
 
         if (!java.util.Arrays.equals(bob.cleartext, alice.recovered))
             throw new Exception("AES in CBC mode recovered text is " +

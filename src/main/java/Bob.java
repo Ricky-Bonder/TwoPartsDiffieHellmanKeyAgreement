@@ -9,9 +9,6 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Collections;
-import javax.crypto.spec.*;
-import javax.crypto.interfaces.*;
-import com.sun.crypto.provider.SunJCE;
 
 public class Bob {
     static PublicKeyEncOuterClass.PublicKeyEnc bobPubKeyProtobufSerialized;
@@ -20,6 +17,7 @@ public class Bob {
     private KeyAgreement bobKeyAgree;
     protected byte[] bobSharedSecret;
     private SecretKeySpec bobAesKey;
+    private Cipher bobCipher;
 
     protected byte[] cleartext;
 
@@ -70,7 +68,6 @@ public class Bob {
 
         bobPubKeyProtobufSerialized = PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
                 .addAllEncodedPublicKey(Collections.singleton(bobKey)).build();
-        System.out.println(bobKey.toString());
 
         return bobPubKeyProtobufSerialized;
     }
@@ -85,13 +82,15 @@ public class Bob {
         bobKeyAgree.doPhase(alicePubKey, true);
     }
 
-    public void generateSharedSecret() throws Exception {
+    public void generateSharedSecret(SharedLength.sharedSecretLength aliceLenSerialized) throws Exception {
+
+        int aliceLen = aliceLenSerialized.getSharedSecretLen();
         /*
          * At this stage, both Alice and Bob have completed the DH key
          * agreement protocol.
          * Both generate the (same) shared secret.
          */
-        byte[] bobSharedSecret = bobKeyAgree.generateSecret();
+        byte[] bobSharedSecret = new byte[aliceLen];
         int bobLen;
         bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 0);
         System.out.println("Bob secret: " +
@@ -105,14 +104,12 @@ public class Bob {
 
     }
 
-    public PublicKeyEncOuterClass.PublicKeyEnc bobEncrypts() throws InvalidKeyException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException {
+    public PublicKeyEncOuterClass.PublicKeyEnc bobSendsEncodedParams() throws InvalidKeyException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException {
         /*
          * Bob encrypts, using AES in CBC mode
          */
-        Cipher bobCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        bobCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         bobCipher.init(Cipher.ENCRYPT_MODE, bobAesKey);
-        cleartext = "This is just an example message from Bob to Alice".getBytes();
-        byte[] ciphertext = bobCipher.doFinal(cleartext);
 
         // Retrieve the parameter that was used, and transfer it to Alice in
         // encoded format
@@ -122,9 +119,19 @@ public class Bob {
 
         ByteString encodedParamsByteString = ByteString.copyFrom(encodedParams);
 
-        PublicKeyEncOuterClass.PublicKeyEnc encodedParamsProtobufSerialized = PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
+        return PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
                 .addAllEncodedPublicKey(Collections.singleton(encodedParamsByteString)).build();
-        return encodedParamsProtobufSerialized;
+    }
+
+    public PublicKeyEncOuterClass.PublicKeyEnc sendCiphertext() throws IllegalBlockSizeException, BadPaddingException {
+        cleartext = "This is just an example message from Bob to Alice".getBytes();
+        System.out.println("Cleartext to send: "+new String(cleartext));
+        byte[] ciphertext = bobCipher.doFinal(cleartext);
+
+        ByteString ciphertextByteString = ByteString.copyFrom(ciphertext);
+
+        return PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
+                .addAllEncodedPublicKey(Collections.singleton(ciphertextByteString)).build();
     }
 
     /*
