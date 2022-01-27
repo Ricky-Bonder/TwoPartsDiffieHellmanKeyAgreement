@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-message PublicKeyEnc {
-    repeated bytes encodedPublicKey = 1;
-}
-
-

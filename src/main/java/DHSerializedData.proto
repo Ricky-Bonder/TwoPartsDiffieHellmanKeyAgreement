@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message PublicKeyEnc {
+    repeated bytes encodedPublicKey = 1;
+}
+message EncodedParams {
+    repeated bytes encodedParams = 1;
+}
+
+message Ciphertext {
+    repeated bytes ciphertext = 1;
+}
+
+
