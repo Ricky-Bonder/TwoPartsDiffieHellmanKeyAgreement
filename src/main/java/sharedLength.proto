@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-message sharedSecretLength {
-    uint32 sharedSecretLen = 1;
-}
-
-

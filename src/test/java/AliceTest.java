@@ -34,7 +34,8 @@ public class AliceTest {
     }
 
     @Test
-    public void decipherTextWorks() throws Exception { Alice alice = new Alice();
+    public void decipherTextWorks() throws Exception {
+        Alice alice = new Alice();
         Bob bob = new Bob();
 
         DHSerializedData.PublicKeyEnc alicePubKey = alice.generateAlicePublicKey();

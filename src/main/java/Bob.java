@@ -122,6 +122,17 @@ public class Bob {
          return ciphertextSerialized;
     }
 
+    public DHSerializedData.Ciphertext sendCiphertextInputFromKeyboard(String plaintext) throws IllegalBlockSizeException, BadPaddingException {
+        cleartext = plaintext.getBytes();
+        System.out.println("Cleartext to send: "+new String(cleartext));
+        byte[] ciphertext = bobCipher.doFinal(cleartext);
+
+        ByteString ciphertextByteString = ByteString.copyFrom(ciphertext);
+
+        DHSerializedData.Ciphertext ciphertextSerialized = DHSerializedData.Ciphertext.newBuilder().addCiphertext(ciphertextByteString).build();
+        return ciphertextSerialized;
+    }
+
     /*
      * Converts a byte to hex digit and writes to the supplied buffer
      */

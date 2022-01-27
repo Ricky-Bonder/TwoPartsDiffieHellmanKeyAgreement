@@ -103,15 +103,6 @@ public class Alice {
         aliceAesKey = new SecretKeySpec(aliceSharedSecret, 0, 16, "AES");
     }
 
-    public void generateSharedSecret() throws Exception {
-
-
-    }
-
-    public void finalPhase() {
-
-    }
-
     public void instantiateAlgoParams(DHSerializedData.EncodedParams encodedParams) throws Exception {
 
         byte[] encodedParamsDeserialized = encodedParams.getEncodedParamsList().get(0).toByteArray();
