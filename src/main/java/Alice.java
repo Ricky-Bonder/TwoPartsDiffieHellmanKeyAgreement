@@ -20,6 +20,7 @@ public class Alice {
     static SharedLength.sharedSecretLength aliceSharedSecretLengthSerialized;
 
     private SecretKeySpec aliceAesKey;
+    private Cipher aliceCipher;
 
     byte[] recovered;
 
@@ -121,7 +122,7 @@ public class Alice {
         aliceAesKey = new SecretKeySpec(aliceSharedSecret, 0, 16, "AES");
     }
 
-    public void aliceDecrypts(PublicKeyEncOuterClass.PublicKeyEnc encodedParams) throws Exception {
+    public void instantiateAlgoParams(PublicKeyEncOuterClass.PublicKeyEnc encodedParams) throws Exception {
 
         byte[] encodedParamsDeserialized = encodedParams.getEncodedPublicKeyList().get(0).toByteArray();
 
@@ -133,11 +134,20 @@ public class Alice {
         // obtained from Bob
         AlgorithmParameters aesParams = AlgorithmParameters.getInstance("AES");
         aesParams.init(encodedParamsDeserialized);
-        Cipher aliceCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        aliceCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         aliceCipher.init(Cipher.DECRYPT_MODE, aliceAesKey, aesParams);
-        byte[] cleartext = "This is just an example message from Alice to Bob".getBytes();
-        recovered = aliceCipher.doFinal(cleartext);
 
+
+    }
+
+    public byte[] decodeCiphertext(PublicKeyEncOuterClass.PublicKeyEnc ciphertextSerialized) throws IllegalBlockSizeException, BadPaddingException {
+        byte[] ciphertextDeserialized = ciphertextSerialized.getEncodedPublicKeyList().get(0).toByteArray();
+
+        recovered = aliceCipher.doFinal(ciphertextDeserialized);
+
+        System.out.println("Decrypted Ciphertext received: "+new String(recovered));
+
+        return recovered;
     }
 
     /*
