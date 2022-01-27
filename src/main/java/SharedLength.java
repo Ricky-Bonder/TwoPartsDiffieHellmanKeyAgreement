@@ -17,10 +17,10 @@ public final class SharedLength {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>uint64 sharedSecretLen = 1;</code>
+     * <code>uint32 sharedSecretLen = 1;</code>
      * @return The sharedSecretLen.
      */
-    long getSharedSecretLen();
+    int getSharedSecretLen();
   }
   /**
    * Protobuf type {@code sharedSecretLength}
@@ -69,7 +69,7 @@ public final class SharedLength {
               break;
             case 8: {
 
-              sharedSecretLen_ = input.readUInt64();
+              sharedSecretLen_ = input.readUInt32();
               break;
             }
             default: {
@@ -105,13 +105,13 @@ public final class SharedLength {
     }
 
     public static final int SHAREDSECRETLEN_FIELD_NUMBER = 1;
-    private long sharedSecretLen_;
+    private int sharedSecretLen_;
     /**
-     * <code>uint64 sharedSecretLen = 1;</code>
+     * <code>uint32 sharedSecretLen = 1;</code>
      * @return The sharedSecretLen.
      */
     @java.lang.Override
-    public long getSharedSecretLen() {
+    public int getSharedSecretLen() {
       return sharedSecretLen_;
     }
 
@@ -129,8 +129,8 @@ public final class SharedLength {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (sharedSecretLen_ != 0L) {
-        output.writeUInt64(1, sharedSecretLen_);
+      if (sharedSecretLen_ != 0) {
+        output.writeUInt32(1, sharedSecretLen_);
       }
       unknownFields.writeTo(output);
     }
@@ -141,9 +141,9 @@ public final class SharedLength {
       if (size != -1) return size;
 
       size = 0;
-      if (sharedSecretLen_ != 0L) {
+      if (sharedSecretLen_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(1, sharedSecretLen_);
+          .computeUInt32Size(1, sharedSecretLen_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -174,8 +174,7 @@ public final class SharedLength {
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + SHAREDSECRETLEN_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          getSharedSecretLen());
+      hash = (53 * hash) + getSharedSecretLen();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -309,7 +308,7 @@ public final class SharedLength {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        sharedSecretLen_ = 0L;
+        sharedSecretLen_ = 0;
 
         return this;
       }
@@ -386,7 +385,7 @@ public final class SharedLength {
 
       public Builder mergeFrom(SharedLength.sharedSecretLength other) {
         if (other == SharedLength.sharedSecretLength.getDefaultInstance()) return this;
-        if (other.getSharedSecretLen() != 0L) {
+        if (other.getSharedSecretLen() != 0) {
           setSharedSecretLen(other.getSharedSecretLen());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -418,33 +417,33 @@ public final class SharedLength {
         return this;
       }
 
-      private long sharedSecretLen_ ;
+      private int sharedSecretLen_ ;
       /**
-       * <code>uint64 sharedSecretLen = 1;</code>
+       * <code>uint32 sharedSecretLen = 1;</code>
        * @return The sharedSecretLen.
        */
       @java.lang.Override
-      public long getSharedSecretLen() {
+      public int getSharedSecretLen() {
         return sharedSecretLen_;
       }
       /**
-       * <code>uint64 sharedSecretLen = 1;</code>
+       * <code>uint32 sharedSecretLen = 1;</code>
        * @param value The sharedSecretLen to set.
        * @return This builder for chaining.
        */
-      public Builder setSharedSecretLen(long value) {
+      public Builder setSharedSecretLen(int value) {
         
         sharedSecretLen_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint64 sharedSecretLen = 1;</code>
+       * <code>uint32 sharedSecretLen = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearSharedSecretLen() {
         
-        sharedSecretLen_ = 0L;
+        sharedSecretLen_ = 0;
         onChanged();
         return this;
       }
@@ -517,7 +516,7 @@ public final class SharedLength {
     java.lang.String[] descriptorData = {
       "\n src/main/java/sharedLength.proto\"-\n\022sh" +
       "aredSecretLength\022\027\n\017sharedSecretLen\030\001 \001(" +
-      "\004b\006proto3"
+      "\rb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
