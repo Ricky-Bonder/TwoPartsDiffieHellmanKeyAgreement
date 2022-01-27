@@ -11,7 +11,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Collections;
 import javax.crypto.spec.*;
 import javax.crypto.interfaces.*;
-import com.sun.crypto.provider.SunJCE;
 
 public class Bob {
     static PublicKeyEncOuterClass.PublicKeyEnc bobPubKeyProtobufSerialized;
@@ -70,7 +69,6 @@ public class Bob {
 
         bobPubKeyProtobufSerialized = PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
                 .addAllEncodedPublicKey(Collections.singleton(bobKey)).build();
-        System.out.println(bobKey.toString());
 
         return bobPubKeyProtobufSerialized;
     }
@@ -85,13 +83,15 @@ public class Bob {
         bobKeyAgree.doPhase(alicePubKey, true);
     }
 
-    public void generateSharedSecret() throws Exception {
+    public void generateSharedSecret(SharedLength.sharedSecretLength aliceLenSerialized) throws Exception {
+
+        int aliceLen = aliceLenSerialized.getSharedSecretLen();
         /*
          * At this stage, both Alice and Bob have completed the DH key
          * agreement protocol.
          * Both generate the (same) shared secret.
          */
-        byte[] bobSharedSecret = bobKeyAgree.generateSecret();
+        byte[] bobSharedSecret = new byte[aliceLen];
         int bobLen;
         bobLen = bobKeyAgree.generateSecret(bobSharedSecret, 0);
         System.out.println("Bob secret: " +

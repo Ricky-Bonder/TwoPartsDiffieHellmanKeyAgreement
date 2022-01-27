@@ -43,8 +43,8 @@ public class AliceTest {
         alice.alicePhase2(bobPubKey);
         bob.bobPhase2();
 
-        alice.generateSharedSecret();
-        bob.generateSharedSecret();
+        SharedLength.sharedSecretLength aliceLenSerialized = alice.generateSharedSecret();
+        bob.generateSharedSecret(aliceLenSerialized);
 
         PublicKeyEncOuterClass.PublicKeyEnc encodedParamSerialized = bob.bobEncrypts();
         alice.aliceDecrypts(encodedParamSerialized);

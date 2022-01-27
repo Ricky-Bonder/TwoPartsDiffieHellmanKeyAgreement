@@ -2,7 +2,6 @@ import com.google.protobuf.ByteString;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
@@ -17,6 +16,9 @@ public class Alice {
 
     private KeyAgreement aliceKeyAgree;
     protected byte[] aliceSharedSecret;
+
+    static SharedLength.sharedSecretLength aliceSharedSecretLengthSerialized;
+
     private SecretKeySpec aliceAesKey;
 
     byte[] recovered;
@@ -76,7 +78,7 @@ public class Alice {
 
     }
 
-    public void generateSharedSecret() throws Exception {
+    public SharedLength.sharedSecretLength generateSharedSecret() throws Exception {
         /*
          * At this stage, both Alice and Bob have completed the DH key
          * agreement protocol.
@@ -88,7 +90,12 @@ public class Alice {
         System.out.println("Alice secret: " +
                 toHexString(aliceSharedSecret));
 
+        aliceSharedSecretLengthSerialized = SharedLength.sharedSecretLength.newBuilder().setSharedSecretLen(aliceLen).build();
+        return aliceSharedSecretLengthSerialized;
 
+    }
+
+    public void finalPhase() {
         /*
          * Now let's create a SecretKey object using the shared secret
          * and use it for encryption. First, we generate SecretKeys for the
@@ -112,10 +119,6 @@ public class Alice {
         System.out.println("Use shared secret as SecretKey object ...");
 
         aliceAesKey = new SecretKeySpec(aliceSharedSecret, 0, 16, "AES");
-
-
-
-
     }
 
     public void aliceDecrypts(PublicKeyEncOuterClass.PublicKeyEnc encodedParams) throws Exception {

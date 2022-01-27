@@ -31,8 +31,9 @@ public class Main {
         alice.alicePhase2(bobPubKey);
         bob.bobPhase2();
 
-        alice.generateSharedSecret();
-        bob.generateSharedSecret();
+        SharedLength.sharedSecretLength aliceLen = alice.generateSharedSecret();
+        bob.generateSharedSecret(aliceLen);
+        alice.finalPhase();
 
         PublicKeyEncOuterClass.PublicKeyEnc encodedParams = bob.bobEncrypts();
         alice.aliceDecrypts(encodedParams);
