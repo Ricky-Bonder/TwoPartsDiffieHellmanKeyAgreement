@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Bob {
@@ -26,7 +27,6 @@ public class Bob {
     }
 
     public DHSerializedData.PublicKeyEnc generateBobPublicKey(DHSerializedData.PublicKeyEnc alicePublicKey) throws InvalidKeySpecException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException {
-        //TODO: receive alicePubKeyEnc from Alice ---- deserialize protobuffed message
 
         byte[] alicePubKeyEnc = alicePublicKey.getEncodedPublicKeyList().get(0).toByteArray();
 
@@ -64,15 +64,13 @@ public class Bob {
 
         ByteString bobKey = ByteString.copyFrom(bobPubKeyEnc);
 
-        //TODO: sent bobPubKeyEnc to Alice
-
         bobPubKeyProtobufSerialized = DHSerializedData.PublicKeyEnc.newBuilder()
                 .addAllEncodedPublicKey(Collections.singleton(bobKey)).build();
 
         return bobPubKeyProtobufSerialized;
     }
 
-    public void bobPhase2() throws InvalidKeyException {
+    public void bobPhase2() throws InvalidKeyException, ShortBufferException {
         /*
          * Bob uses Alice's public key for the first (and only) phase
          * of his version of the DH
@@ -80,9 +78,7 @@ public class Bob {
          */
         System.out.println("BOB: Execute PHASE1 ...");
         bobKeyAgree.doPhase(alicePubKey, true);
-    }
 
-    public void generateSharedSecret() throws Exception {
         /*
          * At this stage, both Alice and Bob have completed the DH key
          * agreement protocol.
@@ -94,13 +90,9 @@ public class Bob {
         System.out.println("Bob secret: " +
                 toHexString(bobSharedSecret));
 
-//        if (!java.util.Arrays.equals(aliceSharedSecret, bobSharedSecret))
-//            throw new Exception("Shared secrets differ");
-//        System.out.println("Shared secrets are the same");
-
         bobAesKey = new SecretKeySpec(bobSharedSecret, 0, 16, "AES");
-
     }
+
 
     public DHSerializedData.EncodedParams bobSendsEncodedParams() throws InvalidKeyException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException {
         /*
@@ -112,8 +104,6 @@ public class Bob {
         // Retrieve the parameter that was used, and transfer it to Alice in
         // encoded format
         byte[] encodedParams = bobCipher.getParameters().getEncoded();
-
-        //todo: serialize encodedParams and send to alice
 
         ByteString encodedParamsByteString = ByteString.copyFrom(encodedParams);
 
@@ -128,8 +118,8 @@ public class Bob {
 
         ByteString ciphertextByteString = ByteString.copyFrom(ciphertext);
 
-        return DHSerializedData.Ciphertext.newBuilder()
-                .addAllCiphertext(Collections.singleton(ciphertextByteString)).build();
+        DHSerializedData.Ciphertext ciphertextSerialized = DHSerializedData.Ciphertext.newBuilder().addCiphertext(ciphertextByteString).build();
+         return ciphertextSerialized;
     }
 
     /*

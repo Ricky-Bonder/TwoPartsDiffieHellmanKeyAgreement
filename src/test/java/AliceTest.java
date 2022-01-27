@@ -23,7 +23,7 @@ public class AliceTest {
         assertEquals(alice.alicePubKeyEncByteArray.length, bytestringToByte.length);
         System.out.println(Arrays.toString(alice.alicePubKeyEncByteArray));
         System.out.println(Arrays.toString(Alice.alicePubKeyProtobufSerialized.getEncodedPublicKeyList().get(0).toByteArray()));
-        assertEquals(alice.alicePubKeyEncByteArray, Alice.alicePubKeyProtobufSerialized.getEncodedPublicKeyList().get(0).toByteArray());
+        assertArrayEquals(alice.alicePubKeyEncByteArray, Alice.alicePubKeyProtobufSerialized.getEncodedPublicKeyList().get(0).toByteArray());
     }
 
     @Test
@@ -42,11 +42,6 @@ public class AliceTest {
 
         alice.alicePhase2(bobPubKey);
         bob.bobPhase2();
-
-        alice.generateSharedSecret();
-        bob.generateSharedSecret();
-
-        alice.finalPhase();
 
         DHSerializedData.EncodedParams encodedParams = bob.bobSendsEncodedParams();
         alice.instantiateAlgoParams(encodedParams);

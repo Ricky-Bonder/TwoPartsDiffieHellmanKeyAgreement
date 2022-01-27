@@ -22,7 +22,7 @@ public class Alice {
 
     byte[] recovered;
 
-    public Alice() throws NoSuchAlgorithmException {
+    public Alice() {
     }
 
     public DHSerializedData.PublicKeyEnc generateAlicePublicKey() throws NoSuchAlgorithmException, InvalidKeyException {
@@ -44,18 +44,13 @@ public class Alice {
 
         alicePubKeyByteString = ByteString.copyFrom(alicePubKeyEncByteArray);
 
-        //TODO: send alicePubKeyEnc to Bob
-
         alicePubKeyProtobufSerialized = DHSerializedData.PublicKeyEnc.newBuilder()
                 .addAllEncodedPublicKey(Collections.singleton(alicePubKeyByteString)).build();
-
-
 
         return alicePubKeyProtobufSerialized;
     }
 
     public void alicePhase2(DHSerializedData.PublicKeyEnc bobPubKeyProtobufSerialized) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException {
-        //TODO: receive bobPubKeyEnc from Bob
 
         byte[] bobPubKeyEnc = bobPubKeyProtobufSerialized.getEncodedPublicKeyList().get(0).toByteArray();
 
@@ -72,12 +67,6 @@ public class Alice {
         System.out.println("ALICE: Execute PHASE1 ...");
         aliceKeyAgree.doPhase(bobPubKey, true);
 
-        //*********************************************************
-
-
-    }
-
-    public void generateSharedSecret() throws Exception {
         /*
          * At this stage, both Alice and Bob have completed the DH key
          * agreement protocol.
@@ -89,9 +78,6 @@ public class Alice {
         System.out.println("Alice secret: " +
                 toHexString(aliceSharedSecret));
 
-    }
-
-    public void finalPhase() {
         /*
          * Now let's create a SecretKey object using the shared secret
          * and use it for encryption. First, we generate SecretKeys for the
@@ -115,6 +101,15 @@ public class Alice {
         System.out.println("Use shared secret as SecretKey object ...");
 
         aliceAesKey = new SecretKeySpec(aliceSharedSecret, 0, 16, "AES");
+    }
+
+    public void generateSharedSecret() throws Exception {
+
+
+    }
+
+    public void finalPhase() {
+
     }
 
     public void instantiateAlgoParams(DHSerializedData.EncodedParams encodedParams) throws Exception {

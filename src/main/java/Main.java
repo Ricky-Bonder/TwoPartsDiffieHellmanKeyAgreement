@@ -10,10 +10,6 @@ public class Main {
         alice.alicePhase2(bobPubKey);
         bob.bobPhase2();
 
-        alice.generateSharedSecret();
-        bob.generateSharedSecret();
-        alice.finalPhase();
-
         DHSerializedData.EncodedParams encodedParams = bob.bobSendsEncodedParams();
         alice.instantiateAlgoParams(encodedParams);
         DHSerializedData.Ciphertext ciphertextSerialized = bob.sendCiphertext();
