@@ -4,19 +4,19 @@ public class Main {
         Alice alice = new Alice();
         Bob bob = new Bob();
 
-        PublicKeyEncOuterClass.PublicKeyEnc alicePubKey = alice.generateAlicePublicKey();
-        PublicKeyEncOuterClass.PublicKeyEnc bobPubKey = bob.generateBobPublicKey(alicePubKey);
+        DHSerializedData.PublicKeyEnc alicePubKey = alice.generateAlicePublicKey();
+        DHSerializedData.PublicKeyEnc bobPubKey = bob.generateBobPublicKey(alicePubKey);
 
         alice.alicePhase2(bobPubKey);
         bob.bobPhase2();
 
-        SharedLength.sharedSecretLength aliceLen = alice.generateSharedSecret();
-        bob.generateSharedSecret(aliceLen);
+        alice.generateSharedSecret();
+        bob.generateSharedSecret();
         alice.finalPhase();
 
-        PublicKeyEncOuterClass.PublicKeyEnc encodedParams = bob.bobSendsEncodedParams();
+        DHSerializedData.EncodedParams encodedParams = bob.bobSendsEncodedParams();
         alice.instantiateAlgoParams(encodedParams);
-        PublicKeyEncOuterClass.PublicKeyEnc ciphertextSerialized = bob.sendCiphertext();
+        DHSerializedData.Ciphertext ciphertextSerialized = bob.sendCiphertext();
         alice.decodeCiphertext(ciphertextSerialized);
 
     }

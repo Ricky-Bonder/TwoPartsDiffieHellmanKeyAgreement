@@ -10,14 +10,12 @@ import java.util.Collections;
 
 public class Alice {
 
-    static PublicKeyEncOuterClass.PublicKeyEnc alicePubKeyProtobufSerialized;
+    static DHSerializedData.PublicKeyEnc alicePubKeyProtobufSerialized;
     byte[] alicePubKeyEncByteArray;
     ByteString alicePubKeyByteString;
 
     private KeyAgreement aliceKeyAgree;
     protected byte[] aliceSharedSecret;
-
-    static SharedLength.sharedSecretLength aliceSharedSecretLengthSerialized;
 
     private SecretKeySpec aliceAesKey;
     private Cipher aliceCipher;
@@ -27,7 +25,7 @@ public class Alice {
     public Alice() throws NoSuchAlgorithmException {
     }
 
-    public PublicKeyEncOuterClass.PublicKeyEnc generateAlicePublicKey() throws NoSuchAlgorithmException, InvalidKeyException {
+    public DHSerializedData.PublicKeyEnc generateAlicePublicKey() throws NoSuchAlgorithmException, InvalidKeyException {
         /*
          * Alice creates her own DH key pair with 2048-bit key size
          */
@@ -48,7 +46,7 @@ public class Alice {
 
         //TODO: send alicePubKeyEnc to Bob
 
-        alicePubKeyProtobufSerialized = PublicKeyEncOuterClass.PublicKeyEnc.newBuilder()
+        alicePubKeyProtobufSerialized = DHSerializedData.PublicKeyEnc.newBuilder()
                 .addAllEncodedPublicKey(Collections.singleton(alicePubKeyByteString)).build();
 
 
@@ -56,7 +54,7 @@ public class Alice {
         return alicePubKeyProtobufSerialized;
     }
 
-    public void alicePhase2(PublicKeyEncOuterClass.PublicKeyEnc bobPubKeyProtobufSerialized) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException {
+    public void alicePhase2(DHSerializedData.PublicKeyEnc bobPubKeyProtobufSerialized) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException {
         //TODO: receive bobPubKeyEnc from Bob
 
         byte[] bobPubKeyEnc = bobPubKeyProtobufSerialized.getEncodedPublicKeyList().get(0).toByteArray();
@@ -79,7 +77,7 @@ public class Alice {
 
     }
 
-    public SharedLength.sharedSecretLength generateSharedSecret() throws Exception {
+    public void generateSharedSecret() throws Exception {
         /*
          * At this stage, both Alice and Bob have completed the DH key
          * agreement protocol.
@@ -90,9 +88,6 @@ public class Alice {
 
         System.out.println("Alice secret: " +
                 toHexString(aliceSharedSecret));
-
-        aliceSharedSecretLengthSerialized = SharedLength.sharedSecretLength.newBuilder().setSharedSecretLen(aliceLen).build();
-        return aliceSharedSecretLengthSerialized;
 
     }
 
@@ -122,9 +117,9 @@ public class Alice {
         aliceAesKey = new SecretKeySpec(aliceSharedSecret, 0, 16, "AES");
     }
 
-    public void instantiateAlgoParams(PublicKeyEncOuterClass.PublicKeyEnc encodedParams) throws Exception {
+    public void instantiateAlgoParams(DHSerializedData.EncodedParams encodedParams) throws Exception {
 
-        byte[] encodedParamsDeserialized = encodedParams.getEncodedPublicKeyList().get(0).toByteArray();
+        byte[] encodedParamsDeserialized = encodedParams.getEncodedParamsList().get(0).toByteArray();
 
         /*
          * Alice decrypts, using AES in CBC mode
@@ -140,8 +135,8 @@ public class Alice {
 
     }
 
-    public byte[] decodeCiphertext(PublicKeyEncOuterClass.PublicKeyEnc ciphertextSerialized) throws IllegalBlockSizeException, BadPaddingException {
-        byte[] ciphertextDeserialized = ciphertextSerialized.getEncodedPublicKeyList().get(0).toByteArray();
+    public byte[] decodeCiphertext(DHSerializedData.Ciphertext ciphertextSerialized) throws IllegalBlockSizeException, BadPaddingException {
+        byte[] ciphertextDeserialized = ciphertextSerialized.getCiphertextList().get(0).toByteArray();
 
         recovered = aliceCipher.doFinal(ciphertextDeserialized);
 
